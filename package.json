@@ -3,15 +3,23 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
+        "lint": "eslint .",
+        "test": "jest",
         "build": "tsc -p tsconfig.json",
         "start": "node dist/index.js",
         "dev": "ts-node src/index.ts"
     },
     "devDependencies": {
+        "@eslint/js": "^9.39.2",
         "@types/express": "^5.0.6",
+        "@types/jest": "^30.0.0",
         "@types/node": "^25.0.8",
+        "eslint": "^9.39.2",
+        "jest": "^30.2.0",
+        "ts-jest": "^29.4.6",
         "ts-node": "^10.9.2",
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "typescript-eslint": "^8.54.0"
     },
     "description": "ts-app",
     "main": "index.js",
