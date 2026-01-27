@@ -13,4 +13,16 @@ export default [
       "@typescript-eslint/no-explicit-any": "warn",
     },
   },
+
+  {
+    files: ["*.js", "*.cjs"],
+    languageOptions: {
+      globals: {
+        module: "readonly",
+        require: "readonly",
+        process: "readonly",
+        __dirname: "readonly",
+      },
+    },
+  },
 ];
