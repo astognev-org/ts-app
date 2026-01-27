@@ -55,7 +55,7 @@ jobs:
   tests-unit:
     name: Unit tests
     runs-on: ubuntu-latest
-    needs: lockfile
+    needs: lint
     steps:
       - uses: actions/checkout@v4
 
