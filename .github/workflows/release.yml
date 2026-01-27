@@ -6,7 +6,7 @@ on:
 
 jobs:
   release:
-    uses: your-org/devops/.github/workflows/release.yml@main
+    uses: astognev-org/devops/.github/workflows/release.yml@main
     with:
       head_sha: ${{ github.sha }}
     permissions:
