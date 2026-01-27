@@ -1,0 +1,18 @@
+name: PR label gates
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  labels:
+    uses: your-org/devops/.github/workflows/labels.yml@main
+    with:
+      verify_enabled: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
+      publish_enabled: ${{ contains(github.event.pull_request.labels.*.name, 'publish') }}
+      base_ref: ${{ github.event.pull_request.base.ref }}
+      head_sha: ${{ github.event.pull_request.head.sha }}
+      pr_number: ${{ github.event.pull_request.number }}
+    permissions:
+      contents: write
+      pull-requests: read
