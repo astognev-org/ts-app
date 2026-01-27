@@ -1,0 +1,43 @@
+name: CI (TypeScript)
+
+on:
+  pull_request:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  LOCAL_IMAGE_NAME: local/${{ github.event.repository.name }}:${{ github.sha }}
+
+  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}:${{ github.sha }}
+  GHCR_IMAGE_NAME_LATEST: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}:latest
+
+jobs:
+  build-binaries:
+    runs-on: [self-hosted, gke, linux]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Build (dist/)
+        run: npm run build
+
+      - name: Package dist artifact
+        run: |
+          tar -czf dist.tgz package.json package-lock.json dist
+
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ts-dist
+          path: dist.tgz
