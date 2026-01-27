@@ -1,6 +1,7 @@
 {
-    "name": "ts-app",
-    "version": "1.0.0",
+    "name": "@astognev-org/ts-app",
+    "version": "1.0.1",
+    "publishConfig": { "registry": "https://npm.pkg.github.com" },
     "private": true,
     "scripts": {
         "lint": "eslint .",
