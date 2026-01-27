@@ -2,14 +2,16 @@ name: PR label gates
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled, unlabeled]
+    types: [labeled]
 
 jobs:
   labels:
     uses: astognev-org/devops/.github/workflows/labels.yml@main
     with:
-      verify_enabled: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
-      publish_enabled: ${{ contains(github.event.pull_request.labels.*.name, 'publish') }}
+      # verify_enabled: ${{ contains(github.event.pull_request.labels.*.name, 'verify') }}
+      # publish_enabled: ${{ contains(github.event.pull_request.labels.*.name, 'publish') }}
+      verify_enabled: ${{ contains(github.event.label.*.name, 'verify') }}
+      publish_enabled: ${{ contains(github.event.label.*.name, 'publish') }}
       base_ref: ${{ github.event.pull_request.base.ref }}
       head_sha: ${{ github.event.pull_request.head.sha }}
       pr_number: ${{ github.event.pull_request.number }}
