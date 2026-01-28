@@ -16,6 +16,7 @@ jobs:
     if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish') }}
     uses: astognev-org/devops/.github/workflows/release_devops.yml@main
     with:
+      VERSION: "${{ needs.set-env.outputs.VERSION }}"
       PR_MERGE_COMMIT_SHA: "${{ needs.set-env.outputs.PR_MERGE_COMMIT_SHA }}"
       DOCKER_IMAGE_NAME_RELEASE: "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}"
       REGISTRY_URL: "${{ vars.REGISTRY_URL }}"
