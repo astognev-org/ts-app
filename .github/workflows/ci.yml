@@ -137,8 +137,8 @@ jobs:
 
       - name: Build Docker image (local)
         run: |
-          docker build -t ${{ needs.first-job.outputs.DOCKER_IMAGE_NAME }} .
-          docker save ${{ needs.first-job.outputs.DOCKER_IMAGE_NAME }} -o image.tar
+          docker build -t ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }} .
+          docker save ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }} -o image.tar
 
       - name: Upload docker image artifact
         uses: actions/upload-artifact@v4
@@ -162,7 +162,7 @@ jobs:
 
       - name: Run container
         run: |
-          docker run -d --rm --name ts-app -p 8080:8080 ${{ needs.first-job.outputs.DOCKER_IMAGE_NAME }}
+          docker run -d --rm --name ts-app -p 8080:8080 ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }}
 
           for i in {1..30}; do
             if curl -fsS http://127.0.0.1:8080/ >/dev/null; then
