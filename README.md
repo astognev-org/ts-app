@@ -142,11 +142,15 @@ deployments.
 
 Images are published to GitHub Container Registry:
 
-    ghcr.io/<org>/<repo>:<commit-sha>
+    ghcr.io/<org>/<repo>:<version>-dev-<commit-short-sha>
+    ghcr.io/<org>/<repo>:<version>
+    ghcr.io/<org>/<repo>:latest
 
 For example:
 
-    ghcr.io/astognev-org/ts-app:5e1d7554e5317d2a4c89ff77aa56882472905a9c
+    ghcr.io/astognev-org/ts-app:1.0.8-dev-0fae59a6
+    ghcr.io/astognev-org/ts-app:1.0.8
+    ghcr.io/astognev-org/ts-app:latest
 
 ------------------------------------------------------------------------
 
