@@ -6,6 +6,7 @@
     "scripts": {
         "lint": "eslint .",
         "test": "jest",
+        "test:e2e": "node e2e/response.e2e.mjs",
         "build": "tsc -p tsconfig.json",
         "start": "node dist/index.js",
         "dev": "ts-node src/index.ts"

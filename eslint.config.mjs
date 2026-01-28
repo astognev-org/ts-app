@@ -15,14 +15,18 @@ export default [
   },
 
   {
-    files: ["*.js", "*.cjs"],
+    files: ["**/*.js", "**/*.cjs", "**/*.mjs"],
     languageOptions: {
       globals: {
         module: "readonly",
         require: "readonly",
         process: "readonly",
         __dirname: "readonly",
+        console: "readonly",
+        setTimeout: "readonly",
+        fetch: "readonly",
       },
     },
   },
+  
 ];
