@@ -1,14 +1,17 @@
 name: Release on merge
 
 on:
-  push:
+  pull_request:
     branches: [main]
+    types: [closed]
 
 jobs:
   release:
-    uses: astognev-org/devops/.github/workflows/release.yml@main
+    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish') }}
+    uses: astognev-org/devops/.github/workflows/release_devops.yml@main
     with:
-      head_sha: ${{ github.sha }}
+      head_sha: ${{ github.event.pull_request.merge_commit_sha || github.event.pull_request.head.sha }}
+
     permissions:
       contents: write
       pull-requests: read
