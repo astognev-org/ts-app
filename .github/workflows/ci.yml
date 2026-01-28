@@ -28,6 +28,9 @@ jobs:
         echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}"
         echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}"
         echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}"
+        echo - "${{ needs.set-env.outputs.PR_BASE_REF }}"
+        echo - "${{ needs.set-env.outputs.PR_SHA }}"
+        echo - "${{ needs.set-env.outputs.PR_NUMBER }}"
 
   check-lockfile:
     runs-on: ubuntu-latest
