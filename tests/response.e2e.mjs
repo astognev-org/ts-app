@@ -1,4 +1,6 @@
-// e2e/response.e2e.mjs
+/* eslint-env node */
+/* global fetch */
+
 const BASE_URL = process.env.BASE_URL || "http://127.0.0.1:8080";
 const EXPECTED = process.env.EXPECTED_BODY || "Hi from TypeScript!";
 
