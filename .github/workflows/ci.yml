@@ -24,11 +24,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: remote-set-env
     steps:
-    - name: debug
-      run: |
+    - run: |
         echo - "${{ needs.remote-set-env.outputs.VERSION }}"
         echo - "${{ env.MY_VARIABLE }}"
-        echo - www
+        echo - ${{ needs.job1.outputs.firstword }}
 
   set-env:
     runs-on: ubuntu-latest
