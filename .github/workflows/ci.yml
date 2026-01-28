@@ -12,9 +12,10 @@ permissions:
   packages: write
 
 env:
+  DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
   LOCAL_IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository }}:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-  GHCR_IMAGE_NAME_LATEST: ghcr.io/${{ github.repository }}:latest
+  GHCR_IMAGE_NAME: ${{ env.DOCKER_REGISTRY_PATH }}:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  GHCR_IMAGE_NAME_LATEST: ${{ env.DOCKER_REGISTRY_PATH }}:latest
 
 jobs:
   lockfile:
@@ -182,10 +183,25 @@ jobs:
       - name: Load image
         run: docker load -i image.tar
 
+      - name: Compute docker tags
+        shell: bash
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          SHA="${{ github.sha }}"
+          SHORT_SHA="${SHA:0:7}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
+
       - name: Tag for GHCR
         run: |
+          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}-dev-${{ env.SHORT_SHA }}
           docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME }}
           docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME_LATEST }}
+
+      - name: Tag release version
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}
 
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
