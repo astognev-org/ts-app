@@ -6,7 +6,6 @@ on:
 
 jobs:
   labels:
-    needs: set-env
     uses: astognev-org/devops/.github/workflows/labels_devops.yml@main
     with:
       verify_enabled: ${{ contains(github.event.label.name, 'verify') }}
