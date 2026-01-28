@@ -34,8 +34,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - id: set-env
-      run: |
+    - run: |
         VERSION="$(node -p "require('./package.json').version")"
         PR_SHA="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
         IMAGE_TAG=""
