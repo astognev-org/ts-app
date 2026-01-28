@@ -1,0 +1,13 @@
+name: Bootstrap repo rules (main)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bootstrap:
+    uses: astognev-org/devops/.github/workflows/bootstrap-branch-ruleset.yml@main
+    with:
+      branch: main
+      checks: '["check-lockfile","lint","unit-tests","build-ts"]'
+    secrets:
+      GH_ADMIN_TOKEN: ${{ secrets.GH_ADMIN_TOKEN }}

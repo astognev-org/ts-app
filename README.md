@@ -30,7 +30,7 @@ Hi from TypeScript!
     │   ├── index.test.ts         # Unit tests (Jest)
     │   └── response.e2e.mjs      # Real E2E test against running container
     ├── .github/workflows/
-    │   ├── ci.yml                # Main CI pipeline
+    │   ├── pr-ci.yml             # Main CI pipeline with PR checks
     │   ├── labels.yml            # Label-driven workflows (verify / publish)
     │   └── release.yml           # Release automation
     ├── dockerfile                # Container image
@@ -92,7 +92,7 @@ curl http://localhost:8080
 
 The main pipeline is defined in:
 
-    .github/workflows/ci.yml
+    .github/workflows/pr-ci.yml
 
 Jobs are partially parallelized.
 
