@@ -12,9 +12,9 @@ permissions:
   packages: write
 
 env:
-  LOCAL_IMAGE_NAME: ${{ github.event.repository.name }}:${{ github.sha }}
-  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-  GHCR_IMAGE_NAME_LATEST: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}:latest
+  LOCAL_IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
+  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository }}:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  GHCR_IMAGE_NAME_LATEST: ghcr.io/${{ github.repository }}:latest
 
 jobs:
   lockfile:
