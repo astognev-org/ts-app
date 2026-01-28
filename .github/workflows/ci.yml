@@ -28,6 +28,7 @@ jobs:
       run: |
         echo - "${{ needs.remote-set-env.outputs.VERSION }}"
         echo - "${{ env.MY_VARIABLE }}"
+        echo - www
 
   set-env:
     runs-on: ubuntu-latest
