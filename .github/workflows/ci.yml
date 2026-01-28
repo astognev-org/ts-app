@@ -12,14 +12,11 @@ permissions:
   packages: write
 
 env:
-  DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
-  LOCAL_IMAGE_NAME: ${{ github.repository }}:${{ github.sha }}
-  GHCR_IMAGE_NAME: ${{ env.DOCKER_REGISTRY_PATH }}:${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
-  GHCR_IMAGE_NAME_LATEST: ${{ env.DOCKER_REGISTRY_PATH }}:latest
+  GHCR_DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
+  # GHCR_IMAGE_TAG: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
 
 jobs:
-  lockfile:
-    name: Lockfile check
+  check-lockfile:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -40,9 +37,8 @@ jobs:
           git diff --exit-code package-lock.json
 
   lint:
-    name: Lint
     runs-on: ubuntu-latest
-    needs: lockfile
+    needs: check-lockfile
     steps:
       - uses: actions/checkout@v4
 
@@ -55,9 +51,8 @@ jobs:
       - run: npm run lint
 
   unit-tests:
-    name: Unit tests
     runs-on: ubuntu-latest
-    needs: lockfile
+    needs: check-lockfile
     steps:
       - uses: actions/checkout@v4
 
@@ -68,6 +63,32 @@ jobs:
 
       - run: npm ci
       - run: npm test
+
+  set-env:
+    runs-on: ubuntu-latest
+    needs: check-lockfile 
+    steps:
+    - id: set-env
+      run: |
+        VERSION="$(node -p "require('./package.json').version")"
+        PR_SHA="${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
+        IMAGE_TAG="${VERSION}-${SHA}"
+        IMAGE_TAG_DEV="${VERSION}-dev-${SHA}"
+        DOCKER_IMAGE_NAME="${{ env.GHCR_DOCKER_REGISTRY_PATH }}:$IMAGE_TAG"
+        DOCKER_IMAGE_NAME_DEV="${{ env.GHCR_DOCKER_REGISTRY_PATH }}:$IMAGE_TAG_DEV"
+        DOCKER_IMAGE_NAME_LATEST="${{ env.GHCR_DOCKER_REGISTRY_PATH }}:latest"
+
+        echo "VERSION=${VERSION}" >> $GITHUB_OUTPUT
+        echo "PR_SHA=${PR_SHA}" >> $GITHUB_OUTPUT
+        echo "DOCKER_IMAGE_NAME=${DOCKER_IMAGE_NAME}" >> $GITHUB_OUTPUT
+        echo "DOCKER_IMAGE_NAME_DEV=${DOCKER_IMAGE_NAME_DEV}" >> $GITHUB_OUTPUT
+        echo "DOCKER_IMAGE_NAME_LATEST=${DOCKER_IMAGE_NAME_LATEST}" >> $GITHUB_OUTPUT
+    outputs:
+      VERSION: ${{ steps.set-env.outputs.VERSION }}
+      PR_SHA: ${{ steps.set-env.outputs.VERSION }}
+      DOCKER_IMAGE_NAME: ${{ steps.set-env.outputs.DOCKER_IMAGE_NAME }}
+      DOCKER_IMAGE_NAME_DEV: ${{ steps.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}
+      DOCKER_IMAGE_NAME_LATEST: ${{ steps.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}
 
   build-ts:
     runs-on: ubuntu-latest
@@ -98,7 +119,7 @@ jobs:
 
   build-docker:
     runs-on: ubuntu-latest
-    needs: build-ts
+    needs: [set-env, build-ts]
     steps:
       - uses: actions/checkout@v4
 
@@ -115,8 +136,8 @@ jobs:
 
       - name: Build Docker image (local)
         run: |
-          docker build -t ${{ env.LOCAL_IMAGE_NAME }} .
-          docker save ${{ env.LOCAL_IMAGE_NAME }} -o image.tar
+          docker build -t ${{ needs.first-job.outputs.DOCKER_IMAGE_NAME }} .
+          docker save ${{ needs.first-job.outputs.DOCKER_IMAGE_NAME }} -o image.tar
 
       - name: Upload docker image artifact
         uses: actions/upload-artifact@v4
@@ -127,7 +148,6 @@ jobs:
   tests-smoke:
     runs-on: ubuntu-latest
     needs: build-docker
-
     steps:
       - name: Download docker image artifact
         uses: actions/download-artifact@v4
@@ -141,7 +161,7 @@ jobs:
 
       - name: Run container
         run: |
-          docker run -d --rm --name ts-app -p 8080:8080 ${{ env.LOCAL_IMAGE_NAME }}
+          docker run -d --rm --name ts-app -p 8080:8080 ${{ needs.first-job.outputs.DOCKER_IMAGE_NAME }}
 
           for i in {1..30}; do
             if curl -fsS http://127.0.0.1:8080/ >/dev/null; then
@@ -173,7 +193,11 @@ jobs:
     permissions:
       contents: read
       packages: write
-
+    env:
+      DOCKER_IMAGE_NAME: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:${{ env.GHCR_IMAGE_TAG }}
+      DOCKER_IMAGE_NAME_LATEST: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:latest
+      DOCKER_IMAGE_NAME_DEV: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}-dev-${{ env.SHORT_SHA }}
+      DOCKER_IMAGE_NAME_RELEASE: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}
     steps:
       - name: Download docker image artifact
         uses: actions/download-artifact@v4
@@ -192,16 +216,15 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "SHORT_SHA=$SHORT_SHA" >> $GITHUB_ENV
 
-      - name: Tag for GHCR
+      - name: Tag for dev and latest
         run: |
-          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}-dev-${{ env.SHORT_SHA }}
-          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME }}
-          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME_LATEST }}
+          docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ env.DOCKER_IMAGE_NAME_DEV }}
+          docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ env.DOCKER_IMAGE_NAME_LATEST }}
 
       - name: Tag release version
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}
+          docker tag ${{ env.DOCKER_IMAGE_NAME }} ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}
 
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
