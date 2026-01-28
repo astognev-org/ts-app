@@ -193,11 +193,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    env:
-      DOCKER_IMAGE_NAME: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:${{ env.GHCR_IMAGE_TAG }}
-      DOCKER_IMAGE_NAME_LATEST: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:latest
-      DOCKER_IMAGE_NAME_DEV: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}-dev-${{ env.SHORT_SHA }}
-      DOCKER_IMAGE_NAME_RELEASE: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}:v${{ env.VERSION }}
     steps:
       - name: Download docker image artifact
         uses: actions/download-artifact@v4
