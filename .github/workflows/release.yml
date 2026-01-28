@@ -17,6 +17,7 @@ jobs:
     uses: astognev-org/devops/.github/workflows/release_devops.yml@main
     with:
       PR_MERGE_COMMIT_SHA: "${{ needs.set-env.outputs.PR_MERGE_COMMIT_SHA }}"
+      DOCKER_IMAGE_NAME_RELEASE: "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}"
     permissions:
       contents: write
       pull-requests: read
