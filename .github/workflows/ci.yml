@@ -25,8 +25,12 @@ jobs:
     needs: set-env
     steps:
     - run: |
-        echo - "${{ needs.set-env.outputs.VERSION }}"
-        echo - "${{ needs.set-env.outputs.PR_SHA }}"
+        echo - "${{ needs.set-env.outputs.* }}"
+    # echo - "${{ needs.set-env.outputs.PR_SHA }}"
+    # DOCKER_IMAGE_NAME: ${{ steps.set-env.outputs.DOCKER_IMAGE_NAME }}
+    # DOCKER_IMAGE_NAME_DEV: ${{ steps.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}
+    # DOCKER_IMAGE_NAME_RELEASE: ${{ steps.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}
+    # DOCKER_IMAGE_NAME_LATEST: ${{ steps.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}
 
   check-lockfile:
     runs-on: ubuntu-latest
