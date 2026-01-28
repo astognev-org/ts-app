@@ -26,8 +26,7 @@ jobs:
     steps:
     - run: |
         echo - "${{ needs.remote-set-env.outputs.VERSION }}"
-        echo - "${{ env.MY_VARIABLE }}"
-        echo - ${{ needs.job1.outputs.firstword }}
+        echo - "${{ needs.remote-set-env.outputs.firstword }}""
 
   set-env:
     runs-on: ubuntu-latest
