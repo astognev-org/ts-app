@@ -16,11 +16,11 @@ jobs:
     with:
       verify_enabled: ${{ contains(github.event.label.name, 'verify') }}
       publish_enabled: ${{ contains(github.event.label.name, 'publish') }}
-      VERSION: ${{ needs.set-env.outputs.VERSION }}
-      PR_BASE_REF: ${{ needs.set-env.outputs.PR_BASE_REF }}
-      PR_SHA: ${{ needs.set-env.outputs.PR_SHA }}
-      PR_NUMBER: ${{ needs.set-env.outputs.PR_NUMBER }}
-      DOCKER_IMAGE_NAME: ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }}
+      VERSION: "${{ needs.set-env.outputs.VERSION }}"
+      PR_BASE_REF: "${{ needs.set-env.outputs.PR_BASE_REF }}"
+      PR_SHA: "${{ needs.set-env.outputs.PR_SHA }}"
+      PR_NUMBER: "${{ needs.set-env.outputs.PR_NUMBER }}"
+      DOCKER_IMAGE_NAME: "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }}"
     permissions:
       contents: write
       pull-requests: read
