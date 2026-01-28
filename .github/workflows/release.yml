@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish') }}
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish')
     uses: astognev-org/devops/.github/workflows/release_devops.yml@main
     with:
       head_sha: ${{ github.event.pull_request.merge_commit_sha || github.event.pull_request.head.sha }}

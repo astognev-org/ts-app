@@ -12,9 +12,9 @@ permissions:
   packages: write
 
 env:
-  LOCAL_IMAGE_NAME: ${{ github.event.repository.name }}:${{ github.sha }}
-
-  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}:${{ github.sha }}
+  IMAGE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+  LOCAL_IMAGE_NAME: ${{ github.event.repository.name }}:${{ env.IMAGE_SHA }}
+  GHCR_IMAGE_NAME: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}:${{ env.IMAGE_SHA }}
   GHCR_IMAGE_NAME_LATEST: ghcr.io/${{ github.repository }}/${{ github.event.repository.name }}:latest
 
 jobs:
@@ -163,3 +163,35 @@ jobs:
         if: always()
         run: |
           docker rm -f ts-app
+
+  push-ghcr:
+    runs-on: [self-hosted, gke, linux]
+    needs:
+      - build-docker
+      - smoke-test
+    if: ${{ github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) }}
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Download docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Load image
+        run: docker load -i image.tar
+
+      - name: Tag for GHCR
+        run: |
+          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME }}
+          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME_LATEST }}
+
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+      - name: Push
+        run: |
+          docker push ${{ env.GHCR_IMAGE_NAME }}
+          docker push ${{ env.GHCR_IMAGE_NAME_LATEST }}
