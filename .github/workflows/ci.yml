@@ -16,7 +16,7 @@ env:
 
 jobs:
   set-env:
-    uses: astognev-org/devops/.github/workflows/remote-set-env.yml@main
+    uses: astognev-org/devops/.github/workflows/set-env.yml@main
     with:
       GHCR_DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
 
@@ -26,7 +26,7 @@ jobs:
     steps:
     - run: |
         echo - "${{ needs.set-env.outputs.VERSION }}"
-        echo - "${{ needs.set-env.outputs.firstword }}"
+        echo - "${{ needs.set-env.outputs.PR_SHA }}"
 
   # set-env:
   #   runs-on: ubuntu-latest
