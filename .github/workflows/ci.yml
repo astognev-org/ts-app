@@ -26,7 +26,7 @@ jobs:
     steps:
     - name: debug
       run: |
-        echo - ${{ needs.remote-set-env.outputs.VERSION }
+        echo - ${{ needs.remote-set-env.outputs.VERSION }}
 
   set-env:
     runs-on: ubuntu-latest
