@@ -24,13 +24,13 @@ jobs:
     - run: |
         echo - "${{ needs.set-env.outputs.VERSION }}"
         echo - "${{ needs.set-env.outputs.PR_SHA }}"
+        echo - "${{ needs.set-env.outputs.PR_MERGE_COMMIT_SHA }}"
+        echo - "${{ needs.set-env.outputs.PR_BASE_REF }}"
+        echo - "${{ needs.set-env.outputs.PR_NUMBER }}"
         echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }}"
         echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}"
         echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}"
         echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}"
-        echo - "${{ needs.set-env.outputs.PR_BASE_REF }}"
-        echo - "${{ needs.set-env.outputs.PR_SHA }}"
-        echo - "${{ needs.set-env.outputs.PR_NUMBER }}"
 
   check-lockfile:
     runs-on: ubuntu-latest
@@ -126,8 +126,8 @@ jobs:
 
       - name: Build Docker image (local)
         run: |
-          docker build -t ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }} .
-          docker save ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }} -o image.tar
+          docker build -t ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }} .
+          docker save ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }} -o image.tar
 
       - name: Upload docker image artifact
         uses: actions/upload-artifact@v4
@@ -151,7 +151,7 @@ jobs:
 
       - name: Run container
         run: |
-          docker run -d --rm --name ts-app -p 8080:8080 ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }}
+          docker run -d --rm --name ts-app -p 8080:8080 ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}
 
           for i in {1..30}; do
             if curl -fsS http://127.0.0.1:8080/ >/dev/null; then
@@ -192,18 +192,17 @@ jobs:
 
       - name: Tag dev and latest
         run: |
-          docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}
-          docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}
+          docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}
 
       - name: Tag release version
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
-          docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}
+          docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}
 
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
       - name: Push
         run: |
-          docker push ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }}
+          docker push ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}
           docker push ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}

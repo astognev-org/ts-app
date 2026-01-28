@@ -6,11 +6,17 @@ on:
     types: [closed]
 
 jobs:
+  set-env:
+    uses: astognev-org/devops/.github/workflows/set-env.yml@main
+    with:
+      GHCR_DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
+
   release:
+    needs: set-env
     if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish') }}
     uses: astognev-org/devops/.github/workflows/release_devops.yml@main
     with:
-      merge_sha: ${{ github.event.pull_request.merge_commit_sha }}
+      PR_MERGE_COMMIT_SHA: "${{ needs.set-env.outputs.PR_MERGE_COMMIT_SHA }}"
     permissions:
       contents: write
       pull-requests: read
