@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
 
 permissions:
   contents: read
@@ -162,33 +164,33 @@ jobs:
         run: |
           docker rm -f ts-app
 
-  push-ghcr:
-    runs-on: ubuntu-latest
-    needs:
-      - build-docker
-      - tests-smoke
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Download docker image artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: docker-image
+  # push-ghcr:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     - build-docker
+  #     - tests-smoke
+  #   if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #     - name: Download docker image artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: docker-image
 
-      - name: Load image
-        run: docker load -i image.tar
+  #     - name: Load image
+  #       run: docker load -i image.tar
 
-      - name: Tag for GHCR
-        run: |
-          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME }}
-          docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME_LATEST }}
+  #     - name: Tag for GHCR
+  #       run: |
+  #         docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME }}
+  #         docker tag ${{ env.LOCAL_IMAGE_NAME }} ${{ env.GHCR_IMAGE_NAME_LATEST }}
 
-      - name: Login to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+  #     - name: Login to GHCR
+  #       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Push
-        run: |
-          docker push ${{ env.GHCR_IMAGE_NAME }}
-          docker push ${{ env.GHCR_IMAGE_NAME_LATEST }}
+  #     - name: Push
+  #       run: |
+  #         docker push ${{ env.GHCR_IMAGE_NAME }}
+  #         docker push ${{ env.GHCR_IMAGE_NAME_LATEST }}
