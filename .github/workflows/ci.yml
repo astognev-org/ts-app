@@ -22,15 +22,7 @@ jobs:
     needs: set-env
     steps:
     - run: |
-        echo - "${{ needs.set-env.outputs.VERSION }}"
-        echo - "${{ needs.set-env.outputs.PR_SHA }}"
-        echo - "${{ needs.set-env.outputs.PR_MERGE_COMMIT_SHA }}"
-        echo - "${{ needs.set-env.outputs.PR_BASE_REF }}"
-        echo - "${{ needs.set-env.outputs.PR_NUMBER }}"
-        echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME }}"
-        echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}"
-        echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}"
-        echo - "${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}"
+        echo '${{ toJSON(needs.set-env.outputs) }}'
 
   check-lockfile:
     runs-on: ubuntu-latest
