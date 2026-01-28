@@ -96,7 +96,7 @@ jobs:
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ts-dist
+          name: ${{ github.event.repository.name }}-dist
           path: dist.tgz
 
   build-docker:
@@ -108,7 +108,7 @@ jobs:
       - name: Download dist artifact
         uses: actions/download-artifact@v4
         with:
-          name: ts-dist
+          name: ${{ github.event.repository.name }}-dist
 
       - name: Unpack dist into workspace
         run: |
