@@ -164,7 +164,7 @@ jobs:
           docker rm -f ts-app
 
   push-ghcr:
-    runs-on: [self-hosted, gke, linux]
+    runs-on: ubuntu-latest
     needs:
       - build-docker
       - tests-smoke
