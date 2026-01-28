@@ -182,19 +182,21 @@ jobs:
       - name: Load image
         run: docker load -i image.tar
 
-      - name: Tag dev and latest
-        run: |
-          docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}
-
-      - name: Tag release version
+      - name: Tag release and latest
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         run: |
+          docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}
           docker tag ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }} ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}
 
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
-      - name: Push
+      - name: Push dev (always)
         run: |
           docker push ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_DEV }}
+
+      - name: Push release + latest (main only)
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: |
+          docker push ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_RELEASE }}
           docker push ${{ needs.set-env.outputs.DOCKER_IMAGE_NAME_LATEST }}
