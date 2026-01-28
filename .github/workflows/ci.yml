@@ -18,7 +18,7 @@ jobs:
   remote-set-env:
     uses: astognev-org/devops/.github/workflows/set-env.yml@main
     with:
-      GHCR_DOCKER_REGISTRY_PATH: ${{ env.GHCR_DOCKER_REGISTRY_PATH }}
+      GHCR_DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
 
   set-env:
     runs-on: ubuntu-latest
