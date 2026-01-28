@@ -11,9 +11,6 @@ permissions:
   contents: read
   packages: write
 
-env:
-  GHCR_DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
-
 jobs:
   set-env:
     uses: astognev-org/devops/.github/workflows/set-env.yml@main
