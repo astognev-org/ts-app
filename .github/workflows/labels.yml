@@ -1,4 +1,4 @@
-name: PR label gates
+name: PR labels CI
 
 on:
   pull_request:

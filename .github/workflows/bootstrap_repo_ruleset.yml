@@ -1,4 +1,4 @@
-name: Bootstrap repo rules (main)
+name: Bootstrap repo ruleset (main)
 
 on:
   workflow_dispatch:

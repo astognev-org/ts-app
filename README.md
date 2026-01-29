@@ -25,19 +25,21 @@ Hi from TypeScript!
 
     .
     ├── src/
-    │   └── index.ts              # Application
+    │   └── index.ts                     # Application
     ├── tests/
-    │   ├── index.test.ts         # Unit tests (Jest)
-    │   └── response.e2e.mjs      # Real E2E test against running container
+    │   ├── index.test.ts                # Unit tests (Jest)
+    │   └── response.e2e.mjs             # Real E2E test against running container
     ├── .github/workflows/
-    │   ├── pr-ci.yml             # Main CI pipeline with PR checks
-    │   ├── labels.yml            # Label-driven workflows (verify / publish)
-    │   └── release.yml           # Release automation
-    ├── dockerfile                # Container image
-    ├── eslint.config.mjs         # ESLint configuration
-    ├── jest.config.js            # Jest configuration
-    ├── tsconfig.json             # TypeScript configuration
-
+    │   ├── pr-ci.yml                    # Main CI pipeline with PR checks
+    │   ├── labels.yml                   # Label-driven workflows (verify / publish)
+    │   ├── release.yml                  # Release automation
+    │   └── bootstrap_repo_ruleset.yml   # Bootstrap branch protection
+    ├── dockerfile                       # Container image
+    ├── eslint.config.mjs                # ESLint configuration
+    ├── jest.config.js                   # Jest configuration
+    ├── tsconfig.json                    # TypeScript configuration
+    ├── package.json                     # NPM project configuration
+    └── package-lock.json                # Dependency locking file
 ------------------------------------------------------------------------
 
 ## Running locally
@@ -136,6 +138,11 @@ generated automatically - Release notes are created
 This allows controlled, explicit releases instead of accidental
 deployments.
 
+### `Release on merge`
+
+When PR labeled with `publish` merged to main it runs release pipeline which creates 
+appropriate release with vX.Y.Z version in GitLab.
+
 ------------------------------------------------------------------------
 
 ## Container registry (GHCR)
@@ -164,5 +171,13 @@ Standard workflow:
 4.  Fix issues if any
 5.  Add label `publish` when ready to release
 6.  Merge after green checks
+
+------------------------------------------------------------------------
+
+## Manual pipelines
+
+- To configure branch protection (Enforce up-to-date branch with main and linear history) "Bootstrap repo rules"
+  could be run. It will create branch protection ruleset in GitHub repository settings.
+
 
 ------------------------------------------------------------------------
