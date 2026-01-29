@@ -1,6 +1,6 @@
 {
     "name": "@astognev-org/ts-app",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "publishConfig": { "registry": "https://npm.pkg.github.com" },
     "private": false,
     "scripts": {
