@@ -7,6 +7,7 @@ on:
 
 jobs:
   set-env:
+    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'publish') }}
     uses: astognev-org/devops/.github/workflows/set-env.yml@main
     with:
       GHCR_DOCKER_REGISTRY_PATH: ghcr.io/${{ github.repository }}
